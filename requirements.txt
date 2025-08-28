@@ -1,0 +1,5 @@
+facenet-pytorch==2.6.0
+retina-face==0.0.17
+numpy==1.26.4
+streamlit==1.49.0
+torch==
