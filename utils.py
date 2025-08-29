@@ -2,6 +2,46 @@ from retinaface import RetinaFace
 import cv2
 from PIL import Image
 from torchvision import transforms
+import torch
+import torch.nn as nn
+from facenet_pytorch import InceptionResnetV1
+
+# Load the PTM(pre-trained model) with its pre-trained weights base on facial recognition dataset
+model = InceptionResnetV1(pretrained='vggface2')
+
+# Must be set to True to be used in classification
+model.classify = True
+
+# Freeze the layers in our PTM
+for param in model.parameters():
+    param.requires_grad = False
+
+# Change the last layer named logits to the ff layer with 4 output channels
+model.logits = nn.Sequential(
+    nn.Linear(512*1*1, 512),  # Extract embeddings
+    nn.ReLU(),                # Add a ReLU activation
+    nn.BatchNorm1d(512),  # Batch norm can improve convergence
+    nn.Dropout(0.2),           # Add regularization
+    nn.Linear(512, 25),       # change to how many idols
+)
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# Transfer the model to device (GPU) for faster training if GPU available
+model = model.to(device)
+
+# Load trained model weights from the file
+model.load_state_dict(torch.load('model_weights (phase 3).pth', map_location=device))
+model.eval()
+
+
+def get_embedding(img_input):
+    img_tensor = preprocess_image(img_input).to(device)
+
+    with torch.no_grad():
+        embedding = model(img_tensor)
+
+    return embedding.squeeze(0).cpu().numpy()
+
 
 def extract_faces(img_path):
     faces = RetinaFace.extract_faces(img_path=img_path)

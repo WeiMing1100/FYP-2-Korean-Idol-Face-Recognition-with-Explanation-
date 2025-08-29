@@ -1,10 +1,11 @@
 import torch
-import device
 import numpy as np
 import cv2
 from utils import preprocess_image
 import matplotlib.pyplot as plt
 from PIL import Image
+from utils import device
+import streamlit as st
 
 class GradCAM:
     def __init__(self, model):
@@ -112,7 +113,7 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
 
     fig, ax = plt.subplots(1, 3, figsize=(15, 5))
 
-    ax[0].imshow(Image.open(original_image))
+    ax[0].imshow(original_image)
     ax[0].axis('off')
     ax[0].set_title('Original Image')
 
@@ -123,5 +124,7 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
     ax[2].imshow(overlaid_image)
     ax[2].axis('off')
     ax[2].set_title(f'Overlaid Image (Class: {class_label}, Prob: {top_prob:.4f})')
+
+    st.pyplot(fig)
 
 
