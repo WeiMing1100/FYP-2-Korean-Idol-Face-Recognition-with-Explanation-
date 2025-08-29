@@ -111,20 +111,24 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
     top_class, top_prob, cam_heatmap, overlaid_image = apply_grad_cam(image_input, model, grad_cam)
     class_label = custom_labels[top_class]
 
-    fig, ax = plt.subplots(1, 3, figsize=(15, 5))
+    if top_prob <= 0.6: # TEST THIS THRESHOLD
+        return False
+    elif top_prob > 0.6:
+        fig, ax = plt.subplots(1, 3, figsize=(15, 5))
 
-    ax[0].imshow(original_image)
-    ax[0].axis('off')
-    ax[0].set_title('Original Image')
+        ax[0].imshow(original_image)
+        ax[0].axis('off')
+        ax[0].set_title('Original Image')
 
-    ax[1].imshow(cam_heatmap)
-    ax[1].axis('off')
-    ax[1].set_title('Grad-CAM Heatmap')
+        ax[1].imshow(cam_heatmap)
+        ax[1].axis('off')
+        ax[1].set_title('Grad-CAM Heatmap')
 
-    ax[2].imshow(overlaid_image)
-    ax[2].axis('off')
-    ax[2].set_title(f'Overlaid Image (Class: {class_label}, Prob: {top_prob:.4f})')
+        ax[2].imshow(overlaid_image)
+        ax[2].axis('off')
+        ax[2].set_title(f'Overlaid Image (Class: {class_label}, Prob: {top_prob:.4f})')
 
-    st.pyplot(fig)
+        st.pyplot(fig)
+    return True
 
 

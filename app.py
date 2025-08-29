@@ -31,21 +31,23 @@ if uploaded_image is not None:
     grad_cam = GradCAM(model)
     extracted_face = extract_faces(img_rgb)
     # I have already called preprocess_image in apply_grad_cam (which is called inside visualize results)
-    visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
+    is_kpop_idol = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
 
-    idol_embeddings = np.load("idol_embeddings.npy")
-    idol_labels = np.load("idol_labels.npy", allow_pickle=True)  # if labels are strings
-    query_embeddings = get_embedding(extracted_face)
 
-    # visualize embeddings
-    best_idx, similarity_score = visualize_embeddings(idol_embeddings, query_embeddings, idol_labels)
+    if not is_kpop_idol:
+        idol_embeddings = np.load("idol_embeddings.npy")
+        idol_labels = np.load("idol_labels.npy", allow_pickle=True)  # if labels are strings
+        query_embeddings = get_embedding(extracted_face)
 
-    predicted_label = idol_labels[best_idx]
-    print("Predicted idol:", predicted_label)
-    print("Similarity:", similarity_score)
+        # visualize embeddings
+        best_idx, similarity_score = visualize_embeddings(idol_embeddings, query_embeddings, idol_labels)
 
-    # similar_img_path = '/content/drive/MyDrive/FYP2/dataset (phase 3)/phase_3/lee chaeyeon/chaeyeon (14).png' # PLACEHOLDER FOR NOW
-    # visualize_similar_images(uploaded_image, similar_img_path, predicted_label, np.round(similarity_score, decimals=4))
+        predicted_label = idol_labels[best_idx]
+        print("Predicted idol:", predicted_label)
+        print("Similarity:", similarity_score)
+
+        # similar_img_path = '/content/drive/MyDrive/FYP2/dataset (phase 3)/phase_3/lee chaeyeon/chaeyeon (14).png' # PLACEHOLDER FOR NOW
+        # visualize_similar_images(uploaded_image, similar_img_path, predicted_label, np.round(similarity_score, decimals=4))
 
 
 
