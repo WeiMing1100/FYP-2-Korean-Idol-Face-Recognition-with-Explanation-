@@ -69,7 +69,7 @@ def visualize_embeddings(idol_embeddings, query_embeddings, idol_labels):
     return best_idx, similarity_score
 
 
-def visualize_similar_images(image_input, similar_idol_image, similar_idol, probability):
+def visualize_similar_images(image_input, similar_idol_image, similar_idol):
     with _lock:
         fig, ax = plt.subplots(1, 2, figsize=(15, 5))
 
@@ -80,7 +80,7 @@ def visualize_similar_images(image_input, similar_idol_image, similar_idol, prob
         ax[1].imshow(Image.open(similar_idol_image))
         ax[1].axis('off')
         ax[1].set_title(f"Similar Idol: {similar_idol}")
-        ax[1].text(0.5, -0.1, f"Your submitted image is probably not a Kpop Idol. This person looks the most similar to {similar_idol}, with similarity score of {probability*100}%!",
-                   fontsize=14, ha='center', va='top', transform=ax[1].transAxes)
+        # ax[1].text(0.5, -0.1, f"Your submitted image is probably not a Kpop Idol. This person looks the most similar to {similar_idol}, with similarity score of {probability*100}%!",
+        #            fontsize=14, ha='center', va='top', transform=ax[1].transAxes)
 
         st.pyplot(fig)
