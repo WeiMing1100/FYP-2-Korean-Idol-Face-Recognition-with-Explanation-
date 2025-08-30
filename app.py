@@ -46,8 +46,37 @@ if uploaded_image is not None:
         print("Predicted idol:", predicted_label)
         print("Similarity:", similarity_score)
 
-        # similar_img_path = '/content/drive/MyDrive/FYP2/dataset (phase 3)/phase_3/lee chaeyeon/chaeyeon (14).png' # PLACEHOLDER FOR NOW
-        # visualize_similar_images(uploaded_image, similar_img_path, predicted_label, np.round(similarity_score, decimals=4))
+
+        idol_image_pair = {
+            "an yujin": "pairs\an yujin\yujin.png",
+            "chaeryeong": "pairs\chaeryeong\chaeryeong.png",
+            "hani": "pairs/hani/hani.png",
+            "heejin": "pairs/heejin/heejin.pn",
+            "irene": "pairs/irene/irene.png",
+            "kwon eunbi": "pairs/kwon eunbi/eunbi.png",
+            "lee chaeyeon": "pairs/lee chaeyeon/chaeyeon.png",
+            "lisa": "pairs/lisa/lisa.png",
+            "mina": "pairs/mina/mina.pn",
+            "momo": "pairs/momo/momo.png",
+            "moonbyul": "pairs/moonbyul/moonbyul.png",
+            "nayeon": "pairs/nayeon/nayeon.png",
+            "rose": "pairs/rose/rose.png",
+            "ryujin": "pairs/ryujin/ryujin.png",
+            "seulgi": "pairs/seulgi/seulgi.png",
+            "sinB": "pairs/sinB/sinb.png",
+            "soojin": "pairs/soojin/soojin.png",
+            "soyeon": "pairs/soyeon/soyeon.png",
+            "tzuyu": "pairs/tzuyu/tzuyu.png",
+            "wheein": "pairs/wheein/wheein.png",
+            "yeji": "pairs/yeji/yeji.png",
+            "yena": "pairs/yena/yena.png",
+            "yuna": "pairs/yuna/yuna.png",
+            "yuqi": "pairs/yuqi/yuqi.png",
+            "yves": "pairs/yves/yves.png"
+        }
+
+        similar_image = idol_image_pair[predicted_label]
+        visualize_similar_images(uploaded_image, similar_image, predicted_label, np.round(similarity_score, decimals=4))
 
 
 
