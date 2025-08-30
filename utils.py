@@ -5,34 +5,40 @@ from torchvision import transforms
 import torch
 import torch.nn as nn
 from facenet_pytorch import InceptionResnetV1
+import streamlit as st
 
-# Load the PTM(pre-trained model) with its pre-trained weights base on facial recognition dataset
-model = InceptionResnetV1(pretrained='vggface2')
+@st.cache_resource
+def load_model():
+    # Load the PTM(pre-trained model) with its pre-trained weights base on facial recognition dataset
+    model = InceptionResnetV1(pretrained='vggface2')
 
-# Must be set to True to be used in classification
-model.classify = True
+    # Must be set to True to be used in classification
+    model.classify = True
 
-# Freeze the layers in our PTM
-for param in model.parameters():
-    param.requires_grad = False
+    # Freeze the layers in our PTM
+    for param in model.parameters():
+        param.requires_grad = False
 
-# Change the last layer named logits to the ff layer with 4 output channels
-model.logits = nn.Sequential(
-    nn.Linear(512*1*1, 512),  # Extract embeddings
-    nn.ReLU(),                # Add a ReLU activation
-    nn.BatchNorm1d(512),  # Batch norm can improve convergence
-    nn.Dropout(0.2),           # Add regularization
-    nn.Linear(512, 25),       # change to how many idols
-)
+    # Change the last layer named logits to the ff layer with 4 output channels
+    model.logits = nn.Sequential(
+        nn.Linear(512*1*1, 512),  # Extract embeddings
+        nn.ReLU(),                # Add a ReLU activation
+        nn.BatchNorm1d(512),  # Batch norm can improve convergence
+        nn.Dropout(0.2),           # Add regularization
+        nn.Linear(512, 25),       # change to how many idols
+    )
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# Transfer the model to device (GPU) for faster training if GPU available
-model = model.to(device)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # Transfer the model to device (GPU) for faster training if GPU available
+    model = model.to(device)
 
-# Load trained model weights from the file
-model.load_state_dict(torch.load('model_weights (phase 3).pth', map_location=device))
-model.eval()
+    # Load trained model weights from the file
+    model.load_state_dict(torch.load('model_weights (phase 3).pth', map_location=device))
+    model.eval()
 
+    return model, device
+
+model, device = load_model()
 
 def get_embedding(img_input):
     img_tensor = preprocess_image(img_input).to(device)
