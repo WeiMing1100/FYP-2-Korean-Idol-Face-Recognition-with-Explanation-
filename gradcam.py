@@ -3,7 +3,6 @@ import numpy as np
 import cv2
 from utils import preprocess_image
 import matplotlib.pyplot as plt
-from PIL import Image
 from utils import device
 import streamlit as st
 
@@ -56,6 +55,8 @@ def register_hooks(model, grad_cam):
         # print("Backward hook triggered!")
         grad_cam.save_gradient(grad_output[0])
 
+    target_module = None
+
     # finding the last conv2d layer, in this case, it's model.block8.conv2d
     for name, module in model.named_modules():
         if isinstance(module, torch.nn.modules.conv.Conv2d):
@@ -97,9 +98,9 @@ def apply_grad_cam(image_input, model, grad_cam):
     # Create heatmap and overlay
     cam_heatmap = cv2.applyColorMap(np.uint8(255 * cam), cv2.COLORMAP_JET)
     cam_heatmap = cv2.cvtColor(cam_heatmap, cv2.COLOR_BGR2RGB)
-    overlayed_image = cv2.addWeighted(original_image, 0.5, cam_heatmap, 0.5, 0)
+    overlaid_image = cv2.addWeighted(original_image, 0.5, cam_heatmap, 0.5, 0)
 
-    return top_class.item(), top_prob.item(), cam_heatmap, overlayed_image
+    return top_class.item(), top_prob.item(), cam_heatmap, overlaid_image
 
 
 def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
