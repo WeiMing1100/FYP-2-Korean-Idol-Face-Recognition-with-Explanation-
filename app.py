@@ -1,5 +1,3 @@
-# from torchvision import models
-# from torch.autograd import Variable
 from gradcam import GradCAM, visualize_gradCAM_results
 from visualize_results import *
 from utils import *
@@ -11,8 +9,8 @@ import math
 
 st.title("Korean Idol Face Recognition with Explanation")
 
-
 st.header("List of Korean Idols")
+st.text("Top 25 best female dancers in KPOP based from ranker.com")
 
 # Items
 items = list(range(1, 26))
@@ -48,112 +46,112 @@ shift = -(st.session_state.page * container_width)
 # Carousel (scroll illusion)
 carousel = f"""
 <div style="width: {container_width}px; overflow: hidden; margin: auto;">
-  <div style="
+    <div style="
       display: flex;
       transform: translateX({shift}px);
       transition: transform 0.6s ease;
-  ">
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">1</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">2</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">3</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">4</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">5</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">6</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">7</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">8</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">9</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">10</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">11</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">12</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">13</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">14</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">15</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">16</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">17</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">18</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">19</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">20</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">21</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">22</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">23</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">24</div>
-    <div style="min-width: 120px; height: 100px; margin-right: 10px;
-        background-color: lightblue; border: 2px solid #333; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-weight: bold; font-size: 20px;">25</div>
-  </div>
+    ">
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Lisa</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Momo</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Yeji</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Chaeryeong</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Lee Chaeyeon</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Seulgi</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Ryujin</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Rosé</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Yuna</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Mina</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Soojin</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Moonbyul</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Wheein</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Irene</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Kwon Eunbi</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">SinB</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Yuqi</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Soyeon</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Nayeon</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">An Yujin</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Yves</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Hani</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">HeeJin</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Yena</div>
+        <div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 20px;">Tzuyu</div>
+    </div>
 </div>
 """
 
