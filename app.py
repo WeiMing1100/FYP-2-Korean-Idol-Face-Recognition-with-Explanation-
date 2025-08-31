@@ -6,11 +6,18 @@ import streamlit as st
 import cv2
 import os
 import math
+from config import bg_img_2
 
+st.set_page_config(initial_sidebar_state="collapsed", layout="centered")
+st.markdown(bg_img_2, unsafe_allow_html=True)
 st.title("Korean Idol Face Recognition with Explanation")
 
 st.subheader("List of Korean Idols")
-st.markdown("Top 25 best female dancers in KPOP based from [ranker.com](https://www.ranker.com/list/best-kpop-female-dancers-right-now/ranker-music?) (as of 31/8/25)")
+st.markdown("""
+<div class="my-first-custom-markdown">
+    Top 25 best female dancers in KPOP based from 
+    <a href="https://www.ranker.com/list/best-kpop-female-dancers-right-now/ranker-music?" target="_blank">ranker.com</a> (as of 31/8/25)</div>
+""", unsafe_allow_html=True)
 
 # Items
 items = list(range(1, 26))
@@ -52,107 +59,133 @@ carousel = f"""
       transition: transform 0.6s ease;
     ">
         <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            background-color: #b0c4de; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             font-weight: bold; font-size: 20px; text-align: center;">
-            Lisa<br>(Blackpink)
+            1. Lisa<br>(Blackpink)
         </div>
         <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            background-color: #b4c9df; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Momo</div>
+            font-weight: bold; font-size: 20px; text-align: center;">
+            2. Yeji<br>(ITZY)
+        </div>
         <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            background-color: #b8cfe0; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Yeji</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            3. Momo<br>(TWICE)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #bcd4e1; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Chaeryeong</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            4. Chaeryeong<br>(ITZY)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0e0e6; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Lee Chaeyeon</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            5. Lee Chaeyeon<br>(Soloist)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0e0e6; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Seulgi</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            6. Seulgi<br>(Red Velvet)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #bcd4e1; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Ryujin</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            7. Ryujin<br>(ITZY)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b8cfe0; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Rosé</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            8. Rosé<br>(Blackpink)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b4c9df; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Yuna</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            9. Yuna<br>(ITZY)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0c4de; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Mina</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            10. Mina<br>(TWICE)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0c4de; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Soojin</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            11. Soojin<br>(I-DLE)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b4c9df; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Moonbyul</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            12. Moonbyul<br>(Mamamoo)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b8cfe0; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Wheein</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            13. Wheein<br>(Mamamoo)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #bcd4e1; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Irene</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            14. Irene<br>(Red Velvet)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0e0e6; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Kwon Eunbi</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            15. Kwon Eunbi<br>(Soloist)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0e0e6; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">SinB</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            16. SinB<br>(Gfriend)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #bcd4e1; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Yuqi</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            17. Yuqi<br>(I-DLE)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b8cfe0; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Soyeon</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            18. Soyeon<br>(I-DLE)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b4c9df; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Nayeon</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            19. Nayeon<br>(TWICE)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0c4de; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">An Yujin</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            20. An Yujin<br>(IVE)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0c4de; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Yves</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            21. Yves<br>(Soloist)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b4c9df; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Hani</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            22. Hani<br>(EXID)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b8cfe0; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">HeeJin</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            23. HeeJin<br>(ARTMS)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #bcd4e1; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Yena</div>
-        <div style="min-width: 120px; height: 100px; margin-right: 10px;
-            background-color: lightblue; border: 2px solid #333; border-radius: 8px;
+            font-weight: bold; font-size: 20px; text-align: center;">
+            24. Yena<br>(Soloist)
+        </div><div style="min-width: 120px; height: 100px; margin-right: 10px;
+            background-color: #b0e0e6; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Tzuyu</div>
+            font-weight: bold; font-size: 20px; text-align: center;">
+            25. Tzuyu<br>(TWICE)
+        </div>
     </div>
 </div>
 """
@@ -231,9 +264,18 @@ if uploaded_image is not None:
         }
 
         similar_image = idol_image_pair[predicted_label]
-        visualize_similar_images(uploaded_image, similar_image, predicted_label)
+        visualize_similar_images(uploaded_image, similar_image, predicted_label.capitalize())
 
-        st.markdown(f"Your submitted image is probably not a Kpop Idol. This person looks the most similar to :orange[{predicted_label}], with similarity score of :orange[{similarity_score_percent}%]!")
+        st.markdown(f"""
+        <div class="my-second-custom-markdown">
+            Your submitted image is probably not in the list of Kpop Idols. 
+            This person looks the most similar to 
+            <span style="color: orange;">{predicted_label.capitalize()}</span>, 
+            with similarity score of 
+            <span style="color: orange;">{similarity_score_percent}%</span>!
+        </div>
+        """, unsafe_allow_html=True)
+
 
 
 
