@@ -9,13 +9,13 @@ import math
 
 st.title("Korean Idol Face Recognition with Explanation")
 
-st.header("List of Korean Idols")
-st.text("Top 25 best female dancers in KPOP based from ranker.com")
+st.subheader("List of Korean Idols")
+st.markdown("Top 25 best female dancers in KPOP based from [ranker.com](https://www.ranker.com/list/best-kpop-female-dancers-right-now/ranker-music?) (as of 31/8/25)")
 
 # Items
 items = list(range(1, 26))
 items_per_page = 5
-item_width = 120  # must match CSS width
+item_width = 120
 gap = 10
 
 # Number of pages (ceil division)
@@ -54,7 +54,9 @@ carousel = f"""
         <div style="min-width: 120px; height: 100px; margin-right: 10px;
             background-color: lightblue; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 20px;">Lisa</div>
+            font-weight: bold; font-size: 20px; text-align: center;">
+            Lisa<br>(Blackpink)
+        </div>
         <div style="min-width: 120px; height: 100px; margin-right: 10px;
             background-color: lightblue; border: 2px solid #333; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
@@ -155,16 +157,15 @@ carousel = f"""
 </div>
 """
 
-# Render
 st.markdown(carousel, unsafe_allow_html=True)
 
 st.write(f"Page {st.session_state.page + 1} of {total_pages}")
 
 st.divider()
 
+
 uploaded_image = st.file_uploader("Upload an image of a Korean Idol or Yourself (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"],
                                          accept_multiple_files=False)
-
 
 
 if uploaded_image is not None:
@@ -188,8 +189,16 @@ if uploaded_image is not None:
         # visualize embeddings
         best_idx, similarity_score = visualize_embeddings(idol_embeddings, query_embeddings, idol_labels)
 
+        st.caption(
+            "Note: The 2D t-SNE plot is only a simplified view of the 512-dimensional embedding space."
+            "Points that look far apart here may still be very close in the original high-dimensional space,"
+            "so distances in this plot may not always reflect the true similarity."
+        )
+
+        st.divider()
+
         predicted_label = idol_labels[best_idx]
-        similarity_score_percent = np.round(similarity_score, decimals=4)*100
+        similarity_score_percent = str(np.round(similarity_score, decimals=4)*100)[:5]
         print("Predicted idol:", predicted_label)
         print("Similarity:", similarity_score)
 
@@ -224,7 +233,7 @@ if uploaded_image is not None:
         similar_image = idol_image_pair[predicted_label]
         visualize_similar_images(uploaded_image, similar_image, predicted_label)
 
-        st.text(f"Your submitted image is probably not a Kpop Idol. This person looks the most similar to :orange[{predicted_label}], with similarity score of {similarity_score_percent}%!")
+        st.markdown(f"Your submitted image is probably not a Kpop Idol. This person looks the most similar to :orange[{predicted_label}], with similarity score of :orange[{similarity_score_percent}%]!")
 
 
 
