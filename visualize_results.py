@@ -80,7 +80,5 @@ def visualize_similar_images(image_input, similar_idol_image, similar_idol):
         ax[1].imshow(Image.open(similar_idol_image))
         ax[1].axis('off')
         ax[1].set_title(f"Similar Idol: {similar_idol}")
-        # ax[1].text(0.5, -0.1, f"Your submitted image is probably not a Kpop Idol. This person looks the most similar to {similar_idol}, with similarity score of {probability*100}%!",
-        #            fontsize=14, ha='center', va='top', transform=ax[1].transAxes)
 
         st.pyplot(fig)
