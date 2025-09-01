@@ -5,8 +5,7 @@ from utils import preprocess_image
 import matplotlib.pyplot as plt
 from utils import device
 import streamlit as st
-from retinaface import RetinaFace
-import mediapipe as mp
+
 
 class GradCAM:
     def __init__(self, model):
