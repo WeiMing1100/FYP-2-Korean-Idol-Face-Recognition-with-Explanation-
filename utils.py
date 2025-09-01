@@ -52,6 +52,9 @@ def get_embedding(img_input):
 def extract_faces(img_path):
     faces = RetinaFace.extract_faces(img_path=img_path)
 
+    landmark_detections = RetinaFace.detect_faces(img_path)
+
+
     if faces is not None and len(faces) > 0:  # Check if at least one face is detected and aligned
         # Use the first face (index 0) from the detected faces
         aligned_face = faces[0]  # Only keep the first face
@@ -62,7 +65,20 @@ def extract_faces(img_path):
         # Convert from BGR to RGB (RetinaFace returns images in BGR format)
         aligned_face_rgb = cv2.cvtColor(resized_face, cv2.COLOR_BGR2RGB)
 
-        return aligned_face_rgb
+        # Get bounding box of the first face
+        facial_area = landmark_detections["face_1"]["facial_area"]  # [x1, y1, x2, y2]
+        x1, y1, x2, y2 = facial_area
+        orig_w, orig_h = x2 - x1, y2 - y1
+
+        # Scale landmarks into 256x256
+        original_landmarks = landmark_detections["face_1"]["landmarks"]
+        aligned_landmarks = {}
+        for key, (lx, ly) in original_landmarks.items():
+            new_x = int((lx - x1) * (256 / orig_w))
+            new_y = int((ly - y1) * (256 / orig_h))
+            aligned_landmarks[key] = (new_x, new_y)
+
+        return aligned_face_rgb, aligned_landmarks
     else:
       return None
 

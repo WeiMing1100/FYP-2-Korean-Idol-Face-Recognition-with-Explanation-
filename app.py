@@ -1,4 +1,4 @@
-from gradcam import GradCAM, visualize_gradCAM_results
+from gradcam import GradCAM, visualize_gradCAM_results, generate_textual_explanation
 from visualize_results import *
 from utils import *
 import numpy as np
@@ -6,7 +6,7 @@ import streamlit as st
 import cv2
 import os
 import math
-from config import bg_img_2
+from css_code import bg_img_2
 
 st.set_page_config(initial_sidebar_state="collapsed", layout="centered")
 st.markdown(bg_img_2, unsafe_allow_html=True)
@@ -201,6 +201,10 @@ uploaded_image = st.file_uploader("Upload an image of a Korean Idol or Yourself 
                                          accept_multiple_files=False)
 
 
+@st.cache_resource
+def get_grad_cam():
+    return GradCAM(model)
+
 if uploaded_image is not None:
     file_bytes = np.asarray(bytearray(uploaded_image.read()), dtype=np.uint8)
     img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
@@ -208,13 +212,15 @@ if uploaded_image is not None:
 
 
 
-    grad_cam = GradCAM(model)
-    extracted_face = extract_faces(img_rgb)
+    grad_cam = get_grad_cam()
+    extracted_face, retinaface_landmarks= extract_faces(img_rgb)
     # I have already called preprocess_image in apply_grad_cam (which is called inside visualize results)
-    is_kpop_idol = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
+    is_kpop_idol, cam, cam_heatmap, overlaid_image = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
 
-
-    if not is_kpop_idol:
+    if is_kpop_idol:
+        text_explanation = generate_textual_explanation(cam, cam_heatmap, retinaface_landmarks, overlaid_image)
+        st.text(text_explanation)
+    elif not is_kpop_idol:
         idol_embeddings = np.load("idol_embeddings.npy")
         idol_labels = np.load("idol_labels.npy", allow_pickle=True)  # if labels are strings
         query_embeddings = get_embedding(extracted_face)

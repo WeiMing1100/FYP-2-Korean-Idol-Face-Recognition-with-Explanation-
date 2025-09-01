@@ -5,6 +5,8 @@ from utils import preprocess_image
 import matplotlib.pyplot as plt
 from utils import device
 import streamlit as st
+from retinaface import RetinaFace
+import mediapipe as mp
 
 class GradCAM:
     def __init__(self, model):
@@ -100,7 +102,7 @@ def apply_grad_cam(image_input, model, grad_cam):
     cam_heatmap = cv2.cvtColor(cam_heatmap, cv2.COLOR_BGR2RGB)
     overlaid_image = cv2.addWeighted(original_image, 0.5, cam_heatmap, 0.5, 0)
 
-    return top_class.item(), top_prob.item(), cam_heatmap, overlaid_image
+    return top_class.item(), top_prob.item(), cam, cam_heatmap, overlaid_image
 
 
 def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
@@ -109,12 +111,12 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
                      'ryujin', 'seulgi', 'sinB', 'soojin', 'soyeon', 'tzuyu', 'wheein',
                      'yeji', 'yena', 'yuna', 'yuqi', 'yves']
 
-    top_class, top_prob, cam_heatmap, overlaid_image = apply_grad_cam(image_input, model, grad_cam)
+    top_class, top_prob, cam, cam_heatmap, overlaid_image = apply_grad_cam(image_input, model, grad_cam)
     class_label = custom_labels[top_class]
 
-    if top_prob <= 0.6: # TEST THIS THRESHOLD
-        return False
-    elif top_prob > 0.6:
+    if top_prob <= 0.55: # TEST THIS THRESHOLD
+        return False, cam, cam_heatmap, overlaid_image
+    elif top_prob > 0.55:
         fig, ax = plt.subplots(1, 3, figsize=(15, 5))
 
         ax[0].imshow(original_image)
@@ -126,10 +128,63 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
         ax[1].set_title('Grad-CAM Heatmap')
 
         ax[2].imshow(overlaid_image)
+        # if aligned_landmarks is not None:
+        #     for name, (x, y) in aligned_landmarks.items():
+        #         ax[2].scatter(x, y, c="cyan", s=30, edgecolors="black")
+        #         ax[2].text(x+2, y-2, name, color="white", fontsize=8)
         ax[2].axis('off')
         ax[2].set_title(f'Overlaid Image (Class: {class_label}, Prob: {top_prob:.4f})')
 
         st.pyplot(fig)
-    return True
+    return True, cam, cam_heatmap, overlaid_image
+
+
+def generate_textual_explanation(cam, cam_heatmap, retinaface_landmarks, overlaid_image, src_size=256, dst_size=160):
+    scale_x = dst_size / src_size
+    scale_y = dst_size / src_size  # square, so same
+    scaled_landmarks = {
+        key: (int(x * scale_x), int(y * scale_y))
+        for key, (x, y) in retinaface_landmarks.items()
+    }
+
+    region_scores = {}
+    for name, coordinates in scaled_landmarks.items():
+        x, y = int(coordinates[0]), int(coordinates[1])
+        patch = cam[max(0, y-7):y+7, max(0, x-7):x+7]
+        region_scores[name] = patch.max() if patch.size > 0 else 0
+
+    sorted_regions = sorted(region_scores.items(), key=lambda x: x[1], reverse=True)
+    top_region, top_score = sorted_regions[0]
+
+    st.write(f"Sorted Region: {sorted_regions}")
+    st.write(f"Top Region: {top_region}")
+    st.write(f"Top Score: {top_score}")
+
+    fig, ax = plt.subplots(1, 1, figsize=(15, 5))
+
+    ax.imshow(overlaid_image)
+    if scaled_landmarks is not None:
+        for name, (x, y) in scaled_landmarks.items():
+            ax.scatter(x, y, c="cyan", s=30, edgecolors="black")
+            ax.text(x+2, y-2, name, color="white", fontsize=8)
+    ax.axis('off')
+    ax.set_title('Overlaid Image with Facial Landmarks')
+
+    st.pyplot(fig)
+
+
+
+
+    if top_score < 0.2:  # threshold for weak focus
+        return "The model distributed attention across the whole face."
+    else:
+        region_map = {
+            "left_eye": "left eye",
+            "right_eye": "right eye",
+            "nose": "nose region",
+            "mouth_left": "mouth (left side)",
+            "mouth_right": "mouth (right side)"
+        }
+        return f"The model focused mostly on the {region_map[top_region]} when identifying this idol."
 
 
