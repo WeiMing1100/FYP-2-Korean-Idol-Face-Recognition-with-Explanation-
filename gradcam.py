@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from utils import device
 import streamlit as st
 
-
 class GradCAM:
     def __init__(self, model):
         self.model = model
