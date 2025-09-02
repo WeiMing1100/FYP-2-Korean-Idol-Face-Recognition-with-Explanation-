@@ -5,6 +5,7 @@ from utils import preprocess_image
 import matplotlib.pyplot as plt
 from utils import device
 import streamlit as st
+import mediapipe as mp
 
 class GradCAM:
     def __init__(self, model):
@@ -137,52 +138,133 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
     return True, cam, cam_heatmap, overlaid_image
 
 
-def generate_textual_explanation(cam, retinaface_landmarks, overlaid_image, src_size=256, dst_size=160):
-    scale_x = dst_size / src_size
-    scale_y = dst_size / src_size  # square, so same
-    scaled_landmarks = {
-        key: (int(x * scale_x), int(y * scale_y))
-        for key, (x, y) in retinaface_landmarks.items()
-    }
+# def generate_textual_explanation(cam, retinaface_landmarks, overlaid_image, src_size=256, dst_size=160):
+#     scale_x = dst_size / src_size
+#     scale_y = dst_size / src_size  # square, so same
+#     scaled_landmarks = {
+#         key: (int(x * scale_x), int(y * scale_y))
+#         for key, (x, y) in retinaface_landmarks.items()
+#     }
+#
+#     region_scores = {}
+#     for name, coordinates in scaled_landmarks.items():
+#         x, y = int(coordinates[0]), int(coordinates[1])
+#         patch = cam[max(0, y-7):y+7, max(0, x-7):x+7]
+#         region_scores[name] = patch.max() if patch.size > 0 else 0
+#
+#     sorted_regions = sorted(region_scores.items(), key=lambda x: x[1], reverse=True)
+#     top_region, top_score = sorted_regions[0]
+#
+#     st.write(f"Sorted Region: {sorted_regions}")
+#     st.write(f"Top Region: {top_region}")
+#     st.write(f"Top Score: {top_score}")
+#
+#     fig, ax = plt.subplots(1, 1, figsize=(15, 5))
+#
+#     ax.imshow(overlaid_image)
+#     if scaled_landmarks is not None:
+#         for name, (x, y) in scaled_landmarks.items():
+#             ax.scatter(x, y, c="cyan", s=30, edgecolors="black")
+#             ax.text(x+2, y-2, name, color="white", fontsize=8)
+#     ax.axis('off')
+#     ax.set_title('Overlaid Image with Facial Landmarks')
+#
+#     st.pyplot(fig)
+#
+#
+#
+#
+#     if top_score < 0.2:  # threshold for weak focus
+#         return "The model distributed attention across the whole face."
+#     else:
+#         region_map = {
+#             "left_eye": "left eye",
+#             "right_eye": "right eye",
+#             "nose": "nose region",
+#             "mouth_left": "mouth (left side)",
+#             "mouth_right": "mouth (right side)"
+#         }
+#         return f"The model focused mostly on the {region_map[top_region]} when identifying this idol."
 
-    region_scores = {}
-    for name, coordinates in scaled_landmarks.items():
-        x, y = int(coordinates[0]), int(coordinates[1])
-        patch = cam[max(0, y-7):y+7, max(0, x-7):x+7]
-        region_scores[name] = patch.max() if patch.size > 0 else 0
 
-    sorted_regions = sorted(region_scores.items(), key=lambda x: x[1], reverse=True)
-    top_region, top_score = sorted_regions[0]
+def generate_textual_explanation(cam, aligned_face_rgb, overlaid_image, dst_size=160):
+    # Use mediapipe to detect facial landmarks
+    mp_face_mesh = mp.solutions.face_mesh
+    face_rgb = aligned_face_rgb.copy()
 
-    st.write(f"Sorted Region: {sorted_regions}")
-    st.write(f"Top Region: {top_region}")
-    st.write(f"Top Score: {top_score}")
+    with mp_face_mesh.FaceMesh(
+        static_image_mode=True,
+        max_num_faces=1,
+        refine_landmarks=True,
+        min_detection_confidence=0.5
+    ) as face_mesh:
 
-    fig, ax = plt.subplots(1, 1, figsize=(15, 5))
+        results = face_mesh.process(face_rgb)
 
-    ax.imshow(overlaid_image)
-    if scaled_landmarks is not None:
-        for name, (x, y) in scaled_landmarks.items():
-            ax.scatter(x, y, c="cyan", s=30, edgecolors="black")
-            ax.text(x+2, y-2, name, color="white", fontsize=8)
-    ax.axis('off')
-    ax.set_title('Overlaid Image with Facial Landmarks')
+        if not results.multi_face_landmarks:
+            return None
 
-    st.pyplot(fig)
+        face_landmarks = results.multi_face_landmarks[0]
 
+        h, w, _ = face_rgb.shape
+        landmarks = {}
+        for i, lm in enumerate(face_landmarks.landmark):
+            x, y = int(lm.x * w), int(lm.y * h)
+            landmarks[i] = (x, y)
 
-
-
-    if top_score < 0.2:  # threshold for weak focus
-        return "The model distributed attention across the whole face."
-    else:
-        region_map = {
-            "left_eye": "left eye",
-            "right_eye": "right eye",
-            "nose": "nose region",
-            "mouth_left": "mouth (left side)",
-            "mouth_right": "mouth (right side)"
+        # Map key points for textual explanation
+        key_landmarks = {
+            "left_eye": landmarks[33],
+            "right_eye": landmarks[263],
+            "nose": landmarks[1],
+            "mouth_left": landmarks[61],
+            "mouth_right": landmarks[291]
         }
-        return f"The model focused mostly on the {region_map[top_region]} when identifying this idol."
 
+        scale_x = dst_size / w
+        scale_y = dst_size / h
+        scaled_landmarks = {k: (int(x * scale_x), int(y * scale_y)) for k, (x, y) in key_landmarks.items()}
 
+        # Compute region scores from Grad-CAM ---
+        region_scores = {}
+        for name, (x, y) in scaled_landmarks.items():
+            patch = cam[max(0, y - 7):y + 7, max(0, x - 7):x + 7]
+            region_scores[name] = patch.max() if patch.size > 0 else 0
+
+        sorted_regions = sorted(region_scores.items(), key=lambda x: x[1], reverse=True)
+        top_region, top_score = sorted_regions[0]
+
+        st.write(f"Sorted Region: {sorted_regions}")
+        st.write(f"Top Region: {top_region}")
+        st.write(f"Top Score: {top_score}")
+
+        # plot figures
+        fig, ax = plt.subplots(1, 2, figsize=(6, 6))
+        ax[0].imshow(cv2.resize(aligned_face_rgb, (dst_size, dst_size)))
+        for name, (x, y) in scaled_landmarks.items():
+            ax[0].scatter(x, y, c="cyan", s=30, edgecolors="black")
+            ax[0].text(x, y-3, name, color="white", fontsize=6, ha="center", va="bottom")
+        ax[0].axis("off")
+        ax[0].set_title("Face with Key Landmarks", fontsize=10)
+
+        ax[1].imshow(cv2.resize(overlaid_image, (dst_size, dst_size)))
+        for name, (x, y) in scaled_landmarks.items():
+            ax[1].scatter(x, y, c="cyan", s=30, edgecolors="black")
+            ax[1].text(x, y-3, name, color="white", fontsize=6, ha="center", va="bottom")
+        ax[1].axis("off")
+        ax[1].set_title("Overlaid Face with Key Landmarks", fontsize=10)
+
+        st.pyplot(fig)
+
+        # --- Step 5: Generate textual explanation ---
+        if top_score < 0.2:  # weak focus
+            return "The model distributed attention across the whole face."
+        else:
+            region_map = {
+                "left_eye": "left eye",
+                "right_eye": "right eye",
+                "nose": "nose region",
+                "mouth_left": "mouth (left side)",
+                "mouth_right": "mouth (right side)"
+            }
+            return f"The model focused mostly on the {region_map[top_region]} when identifying this idol."

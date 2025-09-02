@@ -213,76 +213,80 @@ if uploaded_image is not None:
 
 
     grad_cam = get_grad_cam()
-    extracted_face, retinaface_landmarks= extract_faces(img_rgb)
-    # I have already called preprocess_image in apply_grad_cam (which is called inside visualize results)
-    is_kpop_idol, cam, cam_heatmap, overlaid_image = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
+    extracted_face= extract_faces(img_rgb)
+    if extracted_face is None:
+        st.text("No face found in the image")
+    elif extracted_face is not None:
+        # I have already called preprocess_image in apply_grad_cam (which is called inside visualize results)
+        is_kpop_idol, cam, cam_heatmap, overlaid_image = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
 
-    if is_kpop_idol:
-        text_explanation = generate_textual_explanation(cam, retinaface_landmarks, overlaid_image)
-        st.text(text_explanation)
+        if is_kpop_idol:
+            # text_explanation = generate_textual_explanation(cam, retinaface_landmarks, overlaid_image)
+            text_explanation = generate_textual_explanation(cam, extracted_face, overlaid_image)
+            st.text(text_explanation)
 
-    elif not is_kpop_idol:
-        idol_embeddings = np.load("idol_embeddings.npy")
-        idol_labels = np.load("idol_labels.npy", allow_pickle=True)  # if labels are strings
-        query_embeddings = get_embedding(extracted_face)
+        elif not is_kpop_idol:
+            idol_embeddings = np.load("idol_embeddings.npy")
+            idol_labels = np.load("idol_labels.npy", allow_pickle=True)  # if labels are strings
+            query_embeddings = get_embedding(extracted_face)
 
-        # visualize embeddings
-        best_idx, similarity_score = visualize_embeddings(idol_embeddings, query_embeddings, idol_labels)
+            # visualize embeddings
+            best_idx, similarity_score = visualize_embeddings(idol_embeddings, query_embeddings, idol_labels)
 
-        st.caption(
-            "Note: The 2D t-SNE plot is only a simplified view of the 512-dimensional embedding space."
-            "Points that look far apart here may still be very close in the original high-dimensional space,"
-            "so distances in this plot may not always reflect the true similarity."
-        )
+            st.caption(
+                "Note: The 2D t-SNE plot is only a simplified view of the 512-dimensional embedding space."
+                "Points that look far apart here may still be very close in the original high-dimensional space,"
+                "so distances in this plot may not always reflect the true similarity."
+            )
 
-        st.divider()
+            st.divider()
 
-        predicted_label = idol_labels[best_idx]
-        similarity_score_percent = str(np.round(similarity_score, decimals=4)*100)[:5]
-        print("Predicted idol:", predicted_label)
-        print("Similarity:", similarity_score)
+            predicted_label = idol_labels[best_idx]
+            similarity_score_percent = str(np.round(similarity_score, decimals=4)*100)[:5]
+            print("Predicted idol:", predicted_label)
+            print("Similarity:", similarity_score)
 
-        idol_image_pair = {
-            "an yujin": os.path.join("pairs", "an yujin", "yujin.png"),
-            "chaeryeong": os.path.join("pairs", "chaeryeong", "chaeryeong.png"),
-            "hani": os.path.join("pairs", "hani", "hani.png"),
-            "heejin": os.path.join("pairs", "heejin", "heejin.png"),
-            "irene": os.path.join("pairs", "irene", "irene.png"),
-            "kwon eunbi": os.path.join("pairs", "kwon eunbi", "eunbi.png"),
-            "lee chaeyeon": os.path.join("pairs", "lee chaeyeon", "chaeyeon.png"),
-            "lisa": os.path.join("pairs", "lisa", "lisa.png"),
-            "mina": os.path.join("pairs", "mina", "mina.png"),
-            "momo": os.path.join("pairs", "momo", "momo.png"),
-            "moonbyul": os.path.join("pairs", "moonbyul", "moonbyul.png"),
-            "nayeon": os.path.join("pairs", "nayeon", "nayeon.png"),
-            "rose": os.path.join("pairs", "rose", "rose.png"),
-            "ryujin": os.path.join("pairs", "ryujin", "ryujin.png"),
-            "seulgi": os.path.join("pairs", "seulgi", "seulgi.png"),
-            "sinB": os.path.join("pairs", "sinB", "sinb.png"),
-            "soojin": os.path.join("pairs", "soojin", "soojin.png"),
-            "soyeon": os.path.join("pairs", "soyeon", "soyeon.png"),
-            "tzuyu": os.path.join("pairs", "tzuyu", "tzuyu.png"),
-            "wheein": os.path.join("pairs", "wheein", "wheein.png"),
-            "yeji": os.path.join("pairs", "yeji", "yeji.png"),
-            "yena": os.path.join("pairs", "yena", "yena.png"),
-            "yuna": os.path.join("pairs", "yuna", "yuna.png"),
-            "yuqi": os.path.join("pairs", "yuqi", "yuqi.png"),
-            "yves": os.path.join("pairs", "yves", "yves.png"),
-        }
+            idol_image_pair = {
+                "an yujin": os.path.join("pairs", "an yujin", "yujin.png"),
+                "chaeryeong": os.path.join("pairs", "chaeryeong", "chaeryeong.png"),
+                "hani": os.path.join("pairs", "hani", "hani.png"),
+                "heejin": os.path.join("pairs", "heejin", "heejin.png"),
+                "irene": os.path.join("pairs", "irene", "irene.png"),
+                "kwon eunbi": os.path.join("pairs", "kwon eunbi", "eunbi.png"),
+                "lee chaeyeon": os.path.join("pairs", "lee chaeyeon", "chaeyeon.png"),
+                "lisa": os.path.join("pairs", "lisa", "lisa.png"),
+                "mina": os.path.join("pairs", "mina", "mina.png"),
+                "momo": os.path.join("pairs", "momo", "momo.png"),
+                "moonbyul": os.path.join("pairs", "moonbyul", "moonbyul.png"),
+                "nayeon": os.path.join("pairs", "nayeon", "nayeon.png"),
+                "rose": os.path.join("pairs", "rose", "rose.png"),
+                "ryujin": os.path.join("pairs", "ryujin", "ryujin.png"),
+                "seulgi": os.path.join("pairs", "seulgi", "seulgi.png"),
+                "sinB": os.path.join("pairs", "sinB", "sinb.png"),
+                "soojin": os.path.join("pairs", "soojin", "soojin.png"),
+                "soyeon": os.path.join("pairs", "soyeon", "soyeon.png"),
+                "tzuyu": os.path.join("pairs", "tzuyu", "tzuyu.png"),
+                "wheein": os.path.join("pairs", "wheein", "wheein.png"),
+                "yeji": os.path.join("pairs", "yeji", "yeji.png"),
+                "yena": os.path.join("pairs", "yena", "yena.png"),
+                "yuna": os.path.join("pairs", "yuna", "yuna.png"),
+                "yuqi": os.path.join("pairs", "yuqi", "yuqi.png"),
+                "yves": os.path.join("pairs", "yves", "yves.png"),
+            }
 
-        similar_image = idol_image_pair[predicted_label]
-        capitalized_predicted_label = predicted_label.capitalize()
-        visualize_similar_images(uploaded_image, similar_image, capitalized_predicted_label)
+            similar_image = idol_image_pair[predicted_label]
+            capitalized_predicted_label = predicted_label.capitalize()
+            visualize_similar_images(uploaded_image, similar_image, capitalized_predicted_label)
 
-        st.markdown(f"""
-        <div class="my-second-custom-markdown">
-            Your submitted image is probably not in the list of Kpop Idols. 
-            This person looks the most similar to 
-            <span style="color: orange;">{capitalized_predicted_label}</span>, 
-            with similarity score of 
-            <span style="color: orange;">{similarity_score_percent}%</span>!
-        </div>
-        """, unsafe_allow_html=True)
+            st.markdown(f"""
+            <div class="my-second-custom-markdown">
+                Your submitted image is probably not in the list of Kpop Idols. 
+                This person looks the most similar to 
+                <span style="color: orange;">{capitalized_predicted_label}</span>, 
+                with similarity score of 
+                <span style="color: orange;">{similarity_score_percent}%</span>!
+            </div>
+            """, unsafe_allow_html=True)
 
 
 
