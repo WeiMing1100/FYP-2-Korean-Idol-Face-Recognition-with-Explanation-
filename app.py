@@ -209,7 +209,7 @@ def get_grad_cam():
 if uploaded_image is None:
     st.markdown("""
     <div class="custom-markdown-class">
-        <i>Try uploading an image of a Korean Idol or Yourself!</i>
+        <i>Try uploading an image of a Korean Idol or Yourself to see how similar you are to a Korean Idol!</i>
     </div>
     """, unsafe_allow_html=True)
 elif uploaded_image is not None:
