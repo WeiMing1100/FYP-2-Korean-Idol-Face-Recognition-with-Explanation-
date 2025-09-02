@@ -184,10 +184,11 @@ def generate_textual_explanation_using_mediapipe_landmarks(cam, aligned_face_rgb
 
         sorted_regions = sorted(region_scores.items(), key=lambda x: x[1], reverse=True)
         top_region, top_score = sorted_regions[0]
+        top_second_region, top_second_score = sorted_regions[1]
 
-        st.write(f"Sorted Region: {sorted_regions}")
-        st.write(f"Top Region: {top_region}")
-        st.write(f"Top Score: {top_score}")
+        # st.write(f"Sorted Region: {sorted_regions}")
+        # st.write(f"Top Region: {top_region}")
+        # st.write(f"Top Score: {top_score}")
 
         # plot figures
         fig, ax = plt.subplots(1, 2, figsize=(6, 6))
@@ -208,17 +209,25 @@ def generate_textual_explanation_using_mediapipe_landmarks(cam, aligned_face_rgb
         st.pyplot(fig)
 
         # Generate textual explanation
-        if top_score < 0.2:  # weak focus
-            return "The model distributed attention across the whole face."
+        region_map = {
+            "left_eye": "left eye",
+            "right_eye": "right eye",
+            "nose": "nose region",
+            "mouth_left": "mouth (left side)",
+            "mouth_right": "mouth (right side)"
+        }
+
+        # Check if top score and second top score are 10% within each other
+        if (top_score - top_second_score) <= 0.1:
+            regions_text = f"{(region_map[top_region]).capitalize()} and {(region_map[top_second_region]).capitalize()}"
         else:
-            region_map = {
-                "left_eye": "left eye",
-                "right_eye": "right eye",
-                "nose": "nose region",
-                "mouth_left": "mouth (left side)",
-                "mouth_right": "mouth (right side)"
-            }
-            return f"The model focused mostly on the {region_map[top_region]} when identifying this idol."
+            regions_text = (region_map[top_region]).capitalize()
+
+        return top_score, sorted_regions, regions_text
+        # if top_score < 0.2:  # weak focus
+        #     return "The model distributed attention across the whole face.", sorted_regions
+        # else:
+        #     return f"The model focused mostly on the {regions_text} when identifying this idol.", sorted_regions
 
 
 # def generate_textual_explanation_using_retinaface_landmarks(cam, retinaface_landmarks, overlaid_image, src_size=256, dst_size=160):
