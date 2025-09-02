@@ -206,7 +206,13 @@ uploaded_image = st.file_uploader("Upload an image of a Korean Idol or Yourself 
 def get_grad_cam():
     return GradCAM(model)
 
-if uploaded_image is not None:
+if uploaded_image is None:
+    st.markdown("""
+    <div class="custom-markdown-class">
+        <i>Try uploading an image of a Korean Idol or Yourself!</i>
+    </div>
+    """, unsafe_allow_html=True)
+elif uploaded_image is not None:
     file_bytes = np.asarray(bytearray(uploaded_image.read()), dtype=np.uint8)
     img_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
     img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
