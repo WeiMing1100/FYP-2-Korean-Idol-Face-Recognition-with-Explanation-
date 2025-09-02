@@ -51,7 +51,7 @@ container_width = items_per_page * (item_width + gap)
 # shift by whole container width per page
 shift = -(st.session_state.page * container_width)
 
-# Carousel (scroll illusion)
+# Carousel (scroll illusion) (keep here instead of css_code.py for easier integration)
 carousel = f"""
 <div style="width: {container_width}px; overflow: hidden; margin: auto;">
     <div style="
