@@ -45,14 +45,7 @@ bg_img_2 = """
     padding: 15px;
 }
 
-.my-first-custom-markdown {
-    background-color: rgba(255, 255, 255, 0.8);
-    opacity: 1;
-    border-radius: 10px;
-    padding: 15px;
-}
-
-.my-second-custom-markdown {
+.custom-markdown-class {
     background-color: rgba(255, 255, 255, 0.8);
     opacity: 1;
     border-radius: 10px;
