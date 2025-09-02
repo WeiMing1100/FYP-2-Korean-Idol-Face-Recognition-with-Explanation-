@@ -218,8 +218,9 @@ if uploaded_image is not None:
     is_kpop_idol, cam, cam_heatmap, overlaid_image = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
 
     if is_kpop_idol:
-        text_explanation = generate_textual_explanation(cam, cam_heatmap, retinaface_landmarks, overlaid_image)
+        text_explanation = generate_textual_explanation(cam, retinaface_landmarks, overlaid_image)
         st.text(text_explanation)
+
     elif not is_kpop_idol:
         idol_embeddings = np.load("idol_embeddings.npy")
         idol_labels = np.load("idol_labels.npy", allow_pickle=True)  # if labels are strings
@@ -270,13 +271,14 @@ if uploaded_image is not None:
         }
 
         similar_image = idol_image_pair[predicted_label]
-        visualize_similar_images(uploaded_image, similar_image, predicted_label.capitalize())
+        capitalized_predicted_label = predicted_label.capitalize()
+        visualize_similar_images(uploaded_image, similar_image, capitalized_predicted_label)
 
         st.markdown(f"""
         <div class="my-second-custom-markdown">
             Your submitted image is probably not in the list of Kpop Idols. 
             This person looks the most similar to 
-            <span style="color: orange;">{predicted_label.capitalize()}</span>, 
+            <span style="color: orange;">{capitalized_predicted_label}</span>, 
             with similarity score of 
             <span style="color: orange;">{similarity_score_percent}%</span>!
         </div>

@@ -137,7 +137,7 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
     return True, cam, cam_heatmap, overlaid_image
 
 
-def generate_textual_explanation(cam, cam_heatmap, retinaface_landmarks, overlaid_image, src_size=256, dst_size=160):
+def generate_textual_explanation(cam, retinaface_landmarks, overlaid_image, src_size=256, dst_size=160):
     scale_x = dst_size / src_size
     scale_y = dst_size / src_size  # square, so same
     scaled_landmarks = {
