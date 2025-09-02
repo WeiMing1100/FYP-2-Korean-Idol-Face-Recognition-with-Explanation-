@@ -7,6 +7,7 @@ import cv2
 import os
 import math
 from css_code import bg_img_2
+import pandas as pd
 
 st.set_page_config(initial_sidebar_state="collapsed", layout="centered")
 st.markdown(bg_img_2, unsafe_allow_html=True)
@@ -14,7 +15,7 @@ st.title("Korean Idol Face Recognition with Explanation")
 
 st.subheader("List of Korean Idols")
 st.markdown("""
-<div class="my-first-custom-markdown">
+<div class="custom-markdown-class">
     Top 25 best female dancers in KPOP based from 
     <a href="https://www.ranker.com/list/best-kpop-female-dancers-right-now/ranker-music?" target="_blank">ranker.com</a> (as of 31/8/25)</div>
 """, unsafe_allow_html=True)
@@ -222,8 +223,28 @@ if uploaded_image is not None:
 
         if is_kpop_idol:
             # text_explanation = generate_textual_explanation(cam, retinaface_landmarks, overlaid_image)
-            text_explanation = generate_textual_explanation_using_mediapipe_landmarks(cam, extracted_face, overlaid_image)
-            st.text(text_explanation)
+            top_score, sorted_regions, regions_text = generate_textual_explanation_using_mediapipe_landmarks(cam, extracted_face, overlaid_image)
+
+            # dataframe for sorted_regions
+            df_scores = pd.DataFrame(sorted_regions, columns=["Region", "Score"])
+            styled_df = df_scores.style.background_gradient(cmap="Blues")
+            st.dataframe(styled_df, width="stretch", height="auto", hide_index=True)
+            st.caption("*Note: Score indicates how much the model focuses for each region*")
+
+            if top_score < 0.2: # weak focus
+                st.markdown(f"""
+                <div class="custom-markdown-class">
+                    The model distributed attention across the whole face.
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div class="custom-markdown-class">
+                    The model focused mostly on the 
+                    <span style="color: orange;">{regions_text}</span>
+                    when identifying this idol
+                </div>
+                """, unsafe_allow_html=True)
 
         elif not is_kpop_idol:
             idol_embeddings = np.load("idol_embeddings.npy")
@@ -279,7 +300,7 @@ if uploaded_image is not None:
             visualize_similar_images(uploaded_image, similar_image, capitalized_predicted_label)
 
             st.markdown(f"""
-            <div class="my-second-custom-markdown">
+            <div class="custom-markdown-class">
                 Your submitted image is probably not in the list of Kpop Idols. 
                 This person looks the most similar to 
                 <span style="color: orange;">{capitalized_predicted_label}</span>, 
