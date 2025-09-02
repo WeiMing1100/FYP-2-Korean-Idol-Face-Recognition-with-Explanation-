@@ -1,4 +1,4 @@
-from gradcam import GradCAM, visualize_gradCAM_results, generate_textual_explanation
+from gradcam import GradCAM, visualize_gradCAM_results, generate_textual_explanation_using_mediapipe_landmarks
 from visualize_results import *
 from utils import *
 import numpy as np
@@ -217,12 +217,12 @@ if uploaded_image is not None:
     if extracted_face is None:
         st.text("No face found in the image")
     elif extracted_face is not None:
-        # I have already called preprocess_image in apply_grad_cam (which is called inside visualize results)
+        # I have already called preprocess_image in apply_grad_cam (which is called inside visualize_gradCAM_results)
         is_kpop_idol, cam, cam_heatmap, overlaid_image = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
 
         if is_kpop_idol:
             # text_explanation = generate_textual_explanation(cam, retinaface_landmarks, overlaid_image)
-            text_explanation = generate_textual_explanation(cam, extracted_face, overlaid_image)
+            text_explanation = generate_textual_explanation_using_mediapipe_landmarks(cam, extracted_face, overlaid_image)
             st.text(text_explanation)
 
         elif not is_kpop_idol:
