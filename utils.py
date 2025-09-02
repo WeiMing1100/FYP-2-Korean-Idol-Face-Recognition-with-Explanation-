@@ -82,7 +82,7 @@ def extract_faces(img_path):
         # return aligned_face_rgb, aligned_landmarks
         return aligned_face_rgb
     else:
-      return None, None
+      return None
 
 
 def preprocess_image(img_input):
