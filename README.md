@@ -1,7 +1,7 @@
 # Korean Idol Face Recognition with Explanation
-This project focuses on building a **Korean Idol Face Recognition 
-web application** using deep learning's Convolutional Neural Network(CNN) and have 
-explanation using Explainable Artificial Intelligence(XAI)
+This project is my Final Year Project (FYP) and focuses on building a **Korean Idol Face Recognition 
+web application** using deep learning's Convolutional Neural Network (CNN) and have 
+explanation using Explainable Artificial Intelligence (XAI)
 
 The list of Korean Idols covered is based on the **Top 25 best female 
 dancers in KPOP** from 
