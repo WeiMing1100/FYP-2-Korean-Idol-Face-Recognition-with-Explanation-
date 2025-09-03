@@ -13,6 +13,7 @@ dancers in KPOP** from
 - **Framework:** PyTorch
 - **Base Model:** InceptionResNetV1 pretrained on VGGFace2  
 - **Dataset:** 25 Korean idols (~50 images per idol, augmented)  
+  - collected from kpopping.com and kpop.fandom.com
 - **Face Detection & Alignment:** RetinaFace 
 - **Facial Landmarks Extraction for Explainability:** MediaPipe FaceMesh  
 - **Explainability:** Grad-CAM with textual explanation of key facial regions  
