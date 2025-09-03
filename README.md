@@ -21,12 +21,13 @@ dancers in KPOP** from
 ## 🌐 Web Application
 - **Framework:** Streamlit  
 - **Features:**
-  - Upload an image of a Korean idol  
+  - Upload an image of a Korean idol:
     - Get **predicted idol name**  
     - View **heatmap (Grad-CAM)** highlighting attention regions  
     - Receive a **textual explanation** of the model’s focus  
     - Display confidence scores across different face regions and show the top face region the model focuses on
-  - If image is not a Korean Idol found in the list, display top similarity score of person in image with Korean Idol
+  - If image is not a Korean Idol found in the list: 
+    - Display the **most similar idol** with similarity score  
     - Display **t-SNE plot** of similarity scores
 
 ---
