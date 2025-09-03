@@ -16,7 +16,7 @@ st.title("Korean Idol Face Recognition with Explanation")
 st.subheader("List of Korean Idols")
 st.markdown("""
 <div class="custom-markdown-class">
-    Top 25 best female dancers in KPOP based from 
+    Top 25 best female dancers in KPOP based on 
     <a href="https://www.ranker.com/list/best-kpop-female-dancers-right-now/ranker-music?" target="_blank">ranker.com</a> (as of 31/8/25)</div>
 """, unsafe_allow_html=True)
 
@@ -263,7 +263,7 @@ elif uploaded_image is not None:
             st.caption(
                 "Note: The 2D t-SNE plot is only a simplified view of the 512-dimensional embedding space."
                 "Points that look far apart here may still be very close in the original high-dimensional space,"
-                "so distances in this plot may not always reflect the true similarity."
+                "so global distances(distance between each cluster) in this plot may not always reflect the true similarity."
             )
 
             st.divider()
