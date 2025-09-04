@@ -228,6 +228,7 @@ elif uploaded_image is not None:
         is_kpop_idol, cam, cam_heatmap, overlaid_image = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
 
         if is_kpop_idol:
+            st.divider()
             # text_explanation = generate_textual_explanation(cam, retinaface_landmarks, overlaid_image)
             top_score, sorted_regions, regions_text = generate_textual_explanation_using_mediapipe_landmarks(cam, extracted_face, overlaid_image)
 
