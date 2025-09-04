@@ -202,7 +202,7 @@ uploaded_image = st.file_uploader("Upload an image of a Korean Idol or Yourself 
                                          accept_multiple_files=False)
 
 
-# @st.cache_resource
+# @st.cache_resource # dont cache cuz every GradCAM will have different image input
 def get_grad_cam():
     return GradCAM(model)
 
