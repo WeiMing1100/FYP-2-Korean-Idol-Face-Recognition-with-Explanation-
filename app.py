@@ -271,8 +271,8 @@ elif uploaded_image is not None:
 
             predicted_label = idol_labels[best_idx]
             similarity_score_percent = str(np.round(similarity_score, decimals=4)*100)[:5]
-            print("Predicted idol:", predicted_label)
-            print("Similarity:", similarity_score)
+            # print("Predicted idol:", predicted_label)
+            # print("Similarity:", similarity_score)
 
             idol_image_pair = {
                 "an yujin": os.path.join("pairs", "an yujin", "yujin.png"),
