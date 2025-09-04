@@ -135,6 +135,17 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
         ax[2].set_title(f'Overlaid Image (Class: {class_label}, Prob: {top_prob:.4f})')
 
         st.pyplot(fig)
+
+        top_prob_percent = top_prob[:5]*100
+        st.markdown(f"""
+        <div class="custom-markdown-class">
+            The model predicted this Kpop idol is 
+            <span style="color: orange;">{class_label}</span> 
+            with probability of 
+            <span style="color: orange;">{top_prob_percent}%</span> 
+            !
+        </div>
+        """)
     return True, cam, cam_heatmap, overlaid_image
 
 
