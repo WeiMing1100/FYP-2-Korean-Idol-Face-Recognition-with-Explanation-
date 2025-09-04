@@ -136,7 +136,7 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
 
         st.pyplot(fig)
 
-        top_prob_percent = str(top_prob)[:5]*100
+        top_prob_percent = str(top_prob*100)[:4]
         st.markdown(f"""
         <div class="custom-markdown-class">
             The model predicted this Kpop idol is 
