@@ -136,16 +136,16 @@ def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
 
         st.pyplot(fig)
 
-        top_prob_percent = str(top_prob*100)[:4]
+        top_prob_percent = str(round(top_prob, 4)*100)[:5]
         st.markdown(f"""
         <div class="custom-markdown-class">
             The model predicted this Kpop idol is 
-            <span style="color: orange;">{class_label}</span> 
+            <span style="color: orange;">{class_label.capitalize()}</span> 
             with probability of 
             <span style="color: orange;">{top_prob_percent}%</span> 
             !
         </div>
-        """)
+        """, unsafe_allow_html=True)
     return True, cam, cam_heatmap, overlaid_image
 
 
