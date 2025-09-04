@@ -64,9 +64,11 @@ def visualize_embeddings(idol_embeddings, query_embeddings, idol_labels):
         ax.legend()
         st.pyplot(fig)
 
-    similarity_score = sims[0, best_idx].item()
+    # similarity_score = sims[0, best_idx].item() # best similarity_score
+    avg_top_k_score = sims[0][top_k_idx].mean().item() # average of top 5 similarity_score
 
-    return best_idx, similarity_score
+    # return best_idx, similarity_score
+    return best_idx, avg_top_k_score
 
 
 def visualize_similar_images(image_input, similar_idol_image, similar_idol):
