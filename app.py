@@ -248,7 +248,7 @@ elif uploaded_image is not None:
                 <div class="custom-markdown-class">
                     The model focused mostly on the 
                     <span style="color: orange;">{regions_text}</span>
-                    when identifying this idol
+                    when identifying this idol!
                 </div>
                 """, unsafe_allow_html=True)
 
