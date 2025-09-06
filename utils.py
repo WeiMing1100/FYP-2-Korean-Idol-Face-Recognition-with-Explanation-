@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from facenet_pytorch import InceptionResnetV1
 import streamlit as st
-import numpy as np
+# import numpy as np
 
 @st.cache_resource
 def load_model():
@@ -47,7 +47,11 @@ def get_embedding(img_input):
     with torch.no_grad():
         embedding = model(img_tensor)
 
-    return embedding.squeeze(0).cpu().numpy()
+    embedding = embedding.squeeze(0).cpu().numpy()
+    # normalized_embedding = embedding / np.linalg.norm(embedding)  # L2 normalize
+    #
+    # return normalized_embedding
+    return embedding
 
 
 def extract_faces(img_path):
