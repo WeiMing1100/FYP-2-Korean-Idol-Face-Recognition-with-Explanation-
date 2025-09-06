@@ -223,7 +223,11 @@ elif uploaded_image is not None:
         grad_cam = get_grad_cam()
         extracted_face= extract_faces(img_rgb)
         if extracted_face is None:
-            st.text("No face found in the image")
+            st.markdown("""
+            <div class="custom-markdown-class">
+                The model failed to detect any faces in the image.
+            </div>
+            """, unsafe_allow_html=True)
         elif extracted_face is not None:
             # I have already called preprocess_image in apply_grad_cam (which is called inside visualize_gradCAM_results)
             is_kpop_idol, cam, cam_heatmap, overlaid_image = visualize_gradCAM_results(img_rgb, extracted_face, model, grad_cam)
@@ -256,6 +260,7 @@ elif uploaded_image is not None:
 
             elif not is_kpop_idol:
                 idol_embeddings = np.load("idol_embeddings.npy")
+                idol_embeddings = idol_embeddings / np.linalg.norm(idol_embeddings, axis=1, keepdims=True)
                 idol_labels = np.load("idol_labels.npy", allow_pickle=True)  # if labels are strings
                 query_embeddings = get_embedding(extracted_face)
 
