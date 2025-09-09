@@ -8,7 +8,7 @@ from facenet_pytorch import InceptionResnetV1
 import streamlit as st
 # import numpy as np
 
-@st.cache_resource
+@st.cache_resource(ttl=1*3600)
 def load_model():
     # Load the PTM(pre-trained model) with its pre-trained weights base on facial recognition dataset
     model = InceptionResnetV1(pretrained='vggface2')
@@ -48,9 +48,7 @@ def get_embedding(img_input):
         embedding = model(img_tensor)
 
     embedding = embedding.squeeze(0).cpu().numpy()
-    # normalized_embedding = embedding / np.linalg.norm(embedding)  # L2 normalize
-    #
-    # return normalized_embedding
+
     return embedding
 
 
