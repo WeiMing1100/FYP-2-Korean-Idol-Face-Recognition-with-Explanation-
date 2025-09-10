@@ -212,6 +212,12 @@ if uploaded_image is None:
         <i>Try uploading an image of a Korean Idol or Yourself to see how similar you are to a female Korean Idol!</i>
     </div>
     """, unsafe_allow_html=True)
+    st.markdown("""
+        <div class="custom-markdown-class">
+            <i>Tip for Best Results: Upload a photo containing 1 face only, good lighting and no noise, 
+            filters, or obstructions — and avoid extreme angles. Clear images give you the most accurate matches!</i>
+        </div>
+        """, unsafe_allow_html=True)
 elif uploaded_image is not None:
     with st.spinner("Loading... Please wait."):
         file_bytes = np.asarray(bytearray(uploaded_image.read()), dtype=np.uint8)
