@@ -22,8 +22,8 @@ def visualize_embeddings(idol_embeddings, query_embeddings, idol_labels):
     emb_2d = TSNE(n_components=2, random_state=42, perplexity=30).fit_transform(all_embeddings)
 
     # split back
-    idol_emb_2d = emb_2d[:-1]
-    query_emb_2d = emb_2d[-1]
+    idol_emb_2d = emb_2d[:-1] # everything except last row
+    query_emb_2d = emb_2d[-1] # last row
 
     # find top-k similar idols
     k = 5
