@@ -214,8 +214,12 @@ if uploaded_image is None:
     """, unsafe_allow_html=True)
     st.markdown("""
         <div class="custom-markdown-class">
-            <i>Tip for Best Results: Upload a photo containing 1 face only, good lighting and no noise, 
-            filters, or obstructions — and avoid extreme angles. Clear images give you the most accurate matches!</i>
+            <i>Tip for Best Results: 
+            <li>Upload a photo containing 1 face only</li> 
+            <li>Good lighting</li>
+            <li>No noise, filters, or obstructions</li>
+            <li>And avoid extreme angles</li>
+            <br>Clear images give you the most accurate matches!</br></i>
         </div>
         """, unsafe_allow_html=True)
 elif uploaded_image is not None:
