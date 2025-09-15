@@ -43,6 +43,8 @@ model, device = load_model()
 
 def get_embedding(img_input):
     img_tensor = preprocess_image(img_input).to(device)
+    model.classify = False
+    model.eval()
 
     with torch.no_grad():
         embedding = model(img_tensor)
