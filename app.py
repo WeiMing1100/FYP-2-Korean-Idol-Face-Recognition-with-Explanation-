@@ -269,7 +269,7 @@ elif uploaded_image is not None:
                     """, unsafe_allow_html=True)
 
             elif not is_kpop_idol:
-                idol_embeddings = np.load("idol_embeddings.npy")
+                idol_embeddings = np.load("idol_embeddings_2.npy")
                 idol_embeddings = idol_embeddings / np.linalg.norm(idol_embeddings, axis=1, keepdims=True)
                 idol_labels = np.load("idol_labels.npy", allow_pickle=True)  # if labels are strings
                 query_embeddings = get_embedding(extracted_face)
