@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import cv2
-from utils import preprocess_image
+from utils import preprocess_image, model
 import matplotlib.pyplot as plt
 from utils import device
 import streamlit as st
@@ -39,9 +39,9 @@ class GradCAM:
         for i, weight in enumerate(cam_weights):
             cam += weight * feature_maps[0, i, :, :]
 
-        cam = np.maximum(cam, 0)
-        cam = cv2.resize(cam, (160, 160))
-        cam = cam - np.min(cam)
+        cam = np.maximum(cam, 0) # apply ReLU
+        cam = cv2.resize(cam, (160, 160)) # Resize to input image
+        cam = cam - np.min(cam) # Normalize the range
         cam = cam / np.max(cam)
 
         return cam
@@ -75,12 +75,12 @@ def apply_grad_cam(image_input, model, grad_cam):
     # Register hooks for Grad-CAM
     register_hooks(model, grad_cam)
 
-    # Forward pass
+    # Forward pass (to find the predicted class)
     output = model(image_tensor)
     probabilities = torch.nn.functional.softmax(output, dim=1)
     top_prob, top_class = probabilities.topk(1, dim=1)
 
-    # Generate Grad-CAM
+    # Generate Grad-CAM (forward pass and backward pass)
     cam = grad_cam.generate_cam(image_tensor, top_class.item())
 
     # Prepare original image for overlay
@@ -105,6 +105,9 @@ def apply_grad_cam(image_input, model, grad_cam):
 
 
 def visualize_gradCAM_results(original_image, image_input, model, grad_cam):
+    model.classify = True
+    model.eval()
+
     custom_labels = ['an yujin', 'chaeryeong', 'hani', 'heejin', 'irene', 'kwon eunbi',
                      'lee chaeyeon', 'lisa', 'mina', 'momo', 'moonbyul', 'nayeon', 'rose',
                      'ryujin', 'seulgi', 'sinB', 'soojin', 'soyeon', 'tzuyu', 'wheein',
@@ -168,13 +171,14 @@ def generate_textual_explanation_using_mediapipe_landmarks(cam, aligned_face_rgb
 
         face_landmarks = results.multi_face_landmarks[0]
 
+        # Convert normalized landmarks to pixel coordinates
         h, w, _ = face_rgb.shape
         landmarks = {}
         for i, lm in enumerate(face_landmarks.landmark):
             x, y = int(lm.x * w), int(lm.y * h)
             landmarks[i] = (x, y)
 
-        # Map key points for textual explanation
+        # Map key facial regions for textual explanation
         key_landmarks = {
             "left_eye": landmarks[33],
             "right_eye": landmarks[263],
@@ -183,16 +187,18 @@ def generate_textual_explanation_using_mediapipe_landmarks(cam, aligned_face_rgb
             "mouth_right": landmarks[291]
         }
 
+        # Scale landmarks to GradCAM size
         scale_x = dst_size / w
         scale_y = dst_size / h
         scaled_landmarks = {k: (int(x * scale_x), int(y * scale_y)) for k, (x, y) in key_landmarks.items()}
 
-        # Compute region scores from Grad-CAM ---
+        # Extract Grad-CAM intensity around each landmark
         region_scores = {}
         for name, (x, y) in scaled_landmarks.items():
             patch = cam[max(0, y - 7):y + 7, max(0, x - 7):x + 7]
             region_scores[name] = patch.max() if patch.size > 0 else 0
 
+        # sort the regions by importance
         sorted_regions = sorted(region_scores.items(), key=lambda x: x[1], reverse=True)
         top_region, top_score = sorted_regions[0]
         top_second_region, top_second_score = sorted_regions[1]
