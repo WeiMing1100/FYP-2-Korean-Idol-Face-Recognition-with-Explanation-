@@ -270,7 +270,9 @@ elif uploaded_image is not None:
                 else:
                     st.markdown(f"""
                     <div class="custom-markdown-class">
-                        The model failed to detect facial importance.
+                        The model 
+                        <span style="color: red;">failed</span> 
+                        to detect facial importance.
                     </div>
                     """, unsafe_allow_html=True)
             elif not is_kpop_idol:
