@@ -167,7 +167,7 @@ def generate_textual_explanation_using_mediapipe_landmarks(cam, aligned_face_rgb
         results = face_mesh.process(face_rgb)
 
         if not results.multi_face_landmarks:
-            return None
+            return None, None, None
 
         face_landmarks = results.multi_face_landmarks[0]
 

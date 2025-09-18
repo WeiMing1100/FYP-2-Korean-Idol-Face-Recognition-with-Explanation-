@@ -253,13 +253,13 @@ elif uploaded_image is not None:
                 st.dataframe(styled_df, width="stretch", height="auto", hide_index=True)
                 st.caption("*Note: Score indicates how much the model focuses for each region*")
 
-                if top_score < 0.2: # weak focus
+                if top_score is not None and top_score < 0.2: # weak focus
                     st.markdown(f"""
                     <div class="custom-markdown-class">
                         The model distributed attention across the whole face.
                     </div>
                     """, unsafe_allow_html=True)
-                else:
+                elif top_score is not None and top_score >= 0.2:
                     st.markdown(f"""
                     <div class="custom-markdown-class">
                         The model focused mostly on the 
@@ -267,7 +267,12 @@ elif uploaded_image is not None:
                         when identifying this idol!
                     </div>
                     """, unsafe_allow_html=True)
-
+                else:
+                    st.markdown(f"""
+                    <div class="custom-markdown-class">
+                        The model failed to detect facial importance.
+                    </div>
+                    """, unsafe_allow_html=True)
             elif not is_kpop_idol:
                 idol_embeddings = np.load("idol_embeddings_2.npy")
                 idol_embeddings = idol_embeddings / np.linalg.norm(idol_embeddings, axis=1, keepdims=True)
